@@ -16,7 +16,7 @@ jobs:
 
       # Step 2: Log date, time, and day to a text file every hour
       - name: Log current date, time, and day
-        if: github.event.schedule.cron == '0 * * * *'  # This step runs only every hour
+        if: ${{ github.event_name == 'schedule' && github.event.schedule.cron == '0 * * * *' }}  
         run: |
           # Get current date, time, and day (in UTC)
           DATE=$(date -u "+%Y-%m-%d")
@@ -34,9 +34,9 @@ jobs:
           git commit -m "Add log entry for $DATE $TIME" || echo "No changes"
           git push
 
-      # Step 3: Clear the log file at the end of the day (midnight UTC)
+      # Step 3: Clear the log file at midnight
       - name: Clear log file at midnight
-        if: github.event.schedule.cron == '0 0 * * *'  # This step runs only at midnight UTC
+        if: ${{ github.event_name == 'schedule' && github.event.schedule.cron == '0 0 * * *' }}  
         run: |
           # Clear the content of the log file
           > log.txt
